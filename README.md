@@ -1,45 +1,34 @@
 # 🌟 PuritoJs
-
-> El framework JavaScript más limpio, fresquito y potente para el frontend moderno.
-
-PuritoJs es un framework minimalista pero potente que combina la simplicidad con características modernas para crear aplicaciones web de manera elegante y eficiente.
+El framework JavaScript más limpio, fresquito y potente para el frontend moderno.
 
 ## 📚 Tabla de Contenidos
-
-- [Filosofía](#filosofía)
+- [Introducción](#introducción)
 - [Instalación](#instalación)
-- [Single File Components](#single-file-components)
+- [Componentes](#componentes)
 - [Estado Global](#estado-global)
 - [Sistema de Señales](#sistema-de-señales)
-- [Ejemplos Completos](#ejemplos-completos)
+- [Router](#router)
+- [Ejemplos](#ejemplos)
 
-## 🎯 Filosofía
-
-PuritoJs se basa en tres principios fundamentales:
-
-- **Simplicidad**: Sintaxis clara y directa sin configuraciones complejas
-- **Elegancia**: Código limpio y legible que se entiende a primera vista
-- **Potencia**: Características modernas sin sacrificar la simplicidad
+## 🎯 Introducción
+PuritoJs es un framework que prioriza la simplicidad y elegancia en el desarrollo frontend. Con una sintaxis clara y consistente, permite crear aplicaciones web modernas sin complicaciones innecesarias.
 
 ## 🚀 Instalación
-
 ```bash
 npm install puritojs
 ```
 
-## 📄 Single File Components (SFC)
+## 📦 Componentes
 
-### Creando tu Primer Componente
-
-En PuritoJs, los componentes se crean en archivos con extensión `.pjs`. Cada componente es una función que utiliza "funciones mágicas" para definir su estructura, estilos y lógica.
+### Estructura Básica
+Cada componente se define en un archivo `.pjs` y utiliza funciones mágicas para su estructura:
 
 ```javascript
-// Welcome.pjs
 function Welcome() {
   function Render(Welcome) {
     <div>
-      <h1>Hola {{name}}</h1>
-      <button @click="ping('clicked')">Click me!</button>
+      <h1>{{$message}}</h1>
+      {{$Button()}}
     </div>
   }
 
@@ -50,133 +39,56 @@ function Welcome() {
     
     h1 {
       color: blue;
-      font-size: 24px;
     }
   }
 
   function Js(Welcome) {
-    const name = "Sofia"
+    const message = "Hola PuritoJs!"
   }
 
   return Welcome
 }
 ```
 
-### Funciones Mágicas
+### Uso de Variables y Componentes
+- Para mostrar variables: `{{$nombreVariable}}`
+- Para usar componentes: `{{$NombreComponente()}}`
 
-PuritoJs utiliza tres funciones mágicas principales:
-
-#### 1. Render(ComponentName)
-Define la estructura HTML del componente. Soporta interpolación usando `{{}}`.
-
-```javascript
-function Render(Component) {
-  <div>
-    <h1>{{title}}</h1>
-    <p>{{description}}</p>
-  </div>
-}
-```
-
-#### 2. Styles(ComponentName)
-Define los estilos encapsulados del componente. Los estilos son automáticamente scoped.
+## 💾 Estado Global
+El estado global se define fuera de los componentes y se puede usar en cualquier parte de la aplicación.
 
 ```javascript
-function Styles(Component) {
-  div {
-    max-width: 800px;
-    margin: 0 auto;
-  }
+// En cualquier archivo .pjs
+import { StateGlobal } from "PuritoJs"
+
+function StateGlobal() {
+  const user = mut({
+    name: "Sofia",
+    age: 25
+  })
   
-  h1 {
-    color: #333;
-    font-size: 2em;
-  }
+  const theme = mut("light")
+return StateGlobal
 }
-```
 
-#### 3. Js(ComponentName)
-Contiene toda la lógica del componente.
-
-```javascript
-function Js(Component) {
-  const title = "Mi Título"
-  const description = "Mi descripción"
-  
-  function handleClick() {
-    // lógica aquí
-  }
-}
-```
-
-### Usando Componentes
-
-Para usar un componente, primero debes importarlo y luego usarlo con la sintaxis de interpolación:
-
-```javascript
-import Welcome from "./components/Welcome.pjs"
-
-function App() {
-  function Render(App) {
+function Welcome() {
+  function Render(Welcome) {
     <div>
-      {{$Welcome()}}
+      <h1>Bienvenido {{$user.name}}</h1>
+      <p>Tema actual: {{$theme}}</p>
     </div>
   }
 }
 ```
 
-## 🌍 Estado Global
-
-PuritoJs maneja el estado global de manera simple y efectiva usando la función mágica `StateGlobal` y el método `mut()`.
-
-### Definiendo Estado Global
-
-```javascript
-import { StateGlobal, mut } from "PuritoJs"
-
-function App() {
-  function StateGlobal() {
-    const userName = mut("Sofia")
-    const theme = mut("dark")
-  }
-}
-```
-
-### Características del Estado Global
-
-- **Creación**: `mut()` crea una variable mutable global
-- **Acceso**: Las variables son accesibles desde cualquier componente
-- **Modificación**: El valor se puede cambiar directamente
-- **Eliminación**: Usa `delete nombreVariable` para eliminar del estado global
-
-### Ejemplo de Uso
-
-```javascript
-// Header.pjs
-function Header() {
-  function StateGlobal() {
-    const userName = mut("Sofia")  // Si ya existe, solo la referencia
-  }
-
-  function Render(Header) {
-    <header>
-      <h1>Bienvenido {{userName}}</h1>
-    </header>
-  }
-}
-```
-
 ## 📡 Sistema de Señales
-
-PuritoJs implementa un sistema de señales elegante usando la palabra clave `ping`.
+Las señales permiten la comunicación entre componentes de forma simple y directa.
 
 ### Emitiendo Señales
-
-En el componente hijo:
 ```javascript
 function Button() {
   function Render(Button) {
-    <button @click="ping('clicked', { data: 'Hello!' })">
+    <button @click="signal('clicked', { id: 1 })">
       Click me
     </button>
   }
@@ -184,55 +96,88 @@ function Button() {
 ```
 
 ### Escuchando Señales
-
-En el componente padre:
 ```javascript
 function App() {
   function Render(App) {
     <div>
-      {{$Button() @clicked="handleClick($event)"}}
+      {{$Button() @clicked="handleClick"}}
     </div>
   }
 
   function Js(App) {
-    function handleClick(event) {
-      console.log(event.data) // "Hello!"
+    function handleClick(data) {
+      console.log('Button clicked:', data.id)
     }
   }
 }
 ```
 
-### Características de las Señales
+## 🛣️ Router
 
-- Sintaxis simple usando `ping`
-- Soporte para datos adicionales
-- Propagación automática al componente padre
-- No requiere configuración adicional
-
-## 📝 Ejemplos Completos
-
-### Formulario con Estado Global y Señales
-
+### Configuración
 ```javascript
-// Form.pjs
-import { StateGlobal, mut } from "PuritoJs"
+// router/index.js
+import { CreateRouter } from "PuritoJs"
+import Home from "./Views/Home.pjs"
+import About from "./Views/About.pjs"
 
-function Form() {
-  function StateGlobal() {
-    const formData = mut({
-      name: "",
-      email: ""
-    })
+function Routes() {
+  {
+    route: "/",
+    name: "home",
+    component: Home
+  },
+  {
+    route: "/about",
+    name: "about",
+    component: About
   }
+}
 
-  function Render(Form) {
-    <form @submit="ping('submitted')">
-      <input 
-        value={{formData.name}}
-        @input="formData.name = $event.target.value"
-      />
-      <button type="submit">Enviar</button>
-    </form>
+const Router = CreateRouter(Routes)
+export default Router
+```
+
+### Montaje
+```javascript
+// main.js
+import { createApp } from "PuritoJs"
+import Router from "./router"
+import App from "./App.pjs"
+
+const app = createApp(App)
+app.use(Router)
+app.mount('#app')
+```
+
+### Uso del RouterView
+```javascript
+// App.pjs
+function App() {
+  function Render(App) {
+    <div>
+      {{$RouterView()}}
+    </div>
+  }
+}
+```
+
+## 📝 Ejemplos
+
+### Componente con Estado Global y Señales
+```javascript
+// Counter.pjs
+function StateGlobal() {
+  const count = mut(0)
+}
+
+function Counter() {
+  function Render(Counter) {
+    <div>
+      <h2>Contador: {{$count}}</h2>
+      <button @click="signal('increment')">+1</button>
+      <button @click="signal('decrement')">-1</button>
+    </div>
   }
 }
 
@@ -240,23 +185,72 @@ function Form() {
 function App() {
   function Render(App) {
     <div>
-      <h1>Formulario</h1>
-      {{$Form() @submitted="handleSubmit()"}}
+      {{$Counter() 
+        @increment="count++"
+        @decrement="count--"
+      }}
+    </div>
+  }
+}
+```
+
+### Formulario Simple
+```javascript
+function ContactForm() {
+  function Render(ContactForm) {
+    <form @submit="handleSubmit">
+      <input 
+        value={{$formData.name}}
+        @input="formData.name = $event.target.value"
+      />
+      <button type="submit">Enviar</button>
+    </form>
+  }
+
+  function Js(ContactForm) {
+    const formData = {
+      name: ''
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault()
+      signal('submit', formData)
+    }
+  }
+}
+
+function App() {
+  function Render(App) {
+    <div>
+      {{$ContactForm() @submit="handleFormSubmit"}}
     </div>
   }
 
   function Js(App) {
-    function handleSubmit() {
-      console.log('Formulario enviado!')
+    function handleFormSubmit(data) {
+      console.log('Form data:', data)
     }
   }
 }
 ```
 
-## 🤝 Contribución
+### Navegación Básica
+```javascript
+function Nav() {
+  function Render(Nav) {
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+    </nav>
+  }
+}
 
-¡Nos encantaría que contribuyas a PuritoJs! Por favor lee nuestra guía de contribución para empezar.
-
-## 📄 Licencia
-
-PuritoJs está licenciado bajo MIT License.
+function App() {
+  function Render(App) {
+    <div>
+      {{$Nav()}}
+      {{$RouterView()}}
+    </div>
+  }
+}
+```
